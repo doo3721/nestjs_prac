@@ -1,4 +1,14 @@
 services:
+  postgresql:
+    container_name: postgresql
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ts_user
+      POSTGRES_PASSWORD: ts_pass
+      POSTGRES_DB: ts_db
+    networks:
+      - app_network
+
   nestjs:
     container_name: nestjs
     build:
@@ -6,3 +16,21 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    networks:
+      - app_network
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: doohkim@test.com
+      PGADMIN_DEFAULT_PASSWORD: doohkim_pass
+    ports:
+      - 8080:80
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    name: app_network
+    driver: bridge

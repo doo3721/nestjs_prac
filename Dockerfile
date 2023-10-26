@@ -14,8 +14,12 @@ WORKDIR /var/app
 
 RUN npm install
 
-RUN npm run build
+# RUN npm run build
 
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+# package.json의 scripts에 적힌 npm start를 실행한다
+# nest start시 npm run build도 같이 실행한다
+CMD ["npm", "start"]
+
+# CMD ["node", "dist/main.js"]
