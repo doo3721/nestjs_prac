@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 // import { BoardStatus } from './board-status.enum';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { Board } from './board.entity';
+import { BoardStatus } from './board-status.enum';
+import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('boards')
 export class BoardsController {
@@ -13,6 +15,10 @@ export class BoardsController {
 	// getAllBoards(): Board[] {
 	// 	return (this.boardsService.getAllBoards());
 	// }
+	@Get()
+	getAllBoards(): Promise<Board[]> {
+		return (this.boardsService.getAllBoards());
+	}
 
 	// @Post()
 	// createBoard(
@@ -21,9 +27,10 @@ export class BoardsController {
 	// 	return (this.boardsService.createBoard(createBoardDto));
 	// }
 	@Post()
+	@UsePipes(ValidationPipe)
 	createBoard(
 		@Body() createBoardDto: CreateBoardDto
-	): Promise <Board> {
+	): Promise<Board> {
 		return (this.boardsService.createBoard(createBoardDto));
 	}
 
@@ -35,8 +42,8 @@ export class BoardsController {
 	// }
 	@Get('/:id')
 	getBoardById(
-		@Query('id') id: number
-	): Promise <Board> {
+		@Param('id') id: number
+	): Promise<Board> {
 		return (this.boardsService.getBoardById(id));
 	}
 
@@ -46,6 +53,12 @@ export class BoardsController {
 	// ): void {
 	// 	this.boardsService.deleteBoard(id);
 	// }
+	@Delete('/:id')
+	deleteBoard(
+		@Param('id') id: number
+	): void {
+		this.boardsService.deleteBoard(id);
+	}
 
 	// @Patch()
 	// updateBoardStatus(
@@ -54,4 +67,11 @@ export class BoardsController {
 	// ): Board {
 	// 	return (this.boardsService.updateBoardStatus(id, status));
 	// }
+	@Post('/:id/status')
+	updateBoardStatus(
+		@Param('id') id: number,
+		@Body('status', BoardStatusValidationPipe) status: BoardStatus
+	): Promise<Board> {
+		return (this.boardsService.updateBoardStatus(id, status));
+	}
 }

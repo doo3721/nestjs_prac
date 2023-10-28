@@ -10,7 +10,11 @@ export class BoardRepository extends Repository<Board> {
 		super(Board, dataSource.createEntityManager());
 	}
 
-	async createBoard(createBoardDto: CreateBoardDto): Promise <Board> {
+	async getAllBoards(): Promise<Board[]> {
+		return (await this.find());
+	}
+
+	async createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
 		const { title, description } = createBoardDto;
 
 		const board = this.create({
@@ -31,5 +35,21 @@ export class BoardRepository extends Repository<Board> {
 		}
 
 		return (found);
+	}
+
+	async deleteBoard(id: number): Promise<void> {
+		const result = await this.delete(id);
+
+		if (result.affected === 0) {
+			throw new NotFoundException(`Can't Not Found Id ${id}`);
+		}
+	}
+
+	async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
+		const board = await this.getBoardById(id);
+
+		board.status = status;
+		await this.save(board);
+		return (board);
 	}
 }
